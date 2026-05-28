@@ -1,0 +1,17 @@
+[
+  {
+    "id": "example-q1",
+    "question": "Which institute operates the observatory that first detected the Aurora Basin microseism event?",
+    "answer": "Northbridge Institute of Seismology"
+  },
+  {
+    "id": "example-q2",
+    "question": "What battery chemistry powers the ferry whose route connects the district where the Solace Archive is located to Old Quay?",
+    "answer": "sodium-ion battery banks"
+  },
+  {
+    "id": "example-q3",
+    "question": "Which material is used in the insulation of the habitat designed by the architect who won the 2025 Civic Design Prize?",
+    "answer": "silica aerogel"
+  }
+]

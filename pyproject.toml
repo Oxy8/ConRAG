@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/conrag"]
+
+[project]
+name = "ConRAG"
+version = "0.1.0"
+dependencies = [
+  "networkx",
+  "sentence-transformers",
+  "torch",
+  "numpy",
+  "faiss-cpu",
+  "openai",
+  "httpx[http2]",
+  "json-repair",
+  "python-dotenv",
+  "tqdm",
+  "nanoid",
+  "simple-parsing",
+  "tenacity",
+]
+requires-python = "==3.12.*"
+authors = [
+  {name = "Yikai Zhu", email = "yikaizhu@whu.edu.cn"}
+]
+keywords = ["RAG", "GraphRAG", "AgenticRAG", "Agentic-GraphRAG", "ConRAG", "Multi-hop QA", "Knowledge Graph"]
+import-names = ["conrag"]
+description = "ConRAG: Consensus-Driven Multi-View Retrieval for Multi-Hop Question Answering"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Repository = "https://github.com/yikai-zhu/ConRAG.git"
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
