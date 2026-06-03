@@ -1,0 +1,92 @@
+[
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What is the batting hand of each of the first five picks in the 1998 MLB draft",
+    "gold_answer": "Pat Burrell': 'Right', 'Mark Mulder': 'Left', 'Corey Patterson': 'Left', 'Jeff Austin': 'Right', 'JD Drew': 'Left",
+    "pred_answer": "Pat Burrell (right), Mark Mulder (left), Corey Patterson (left), Jeff Austin (right), and J. D. Drew (left",
+    "string_accuracy": 0.0,
+    "string_precision": 0.8235294117647058,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What were box office values of the Star Wars films in the prequel and sequel trilogies",
+    "gold_answer": "The Phantom Menace': '$1.027 billion', 'Attack of the Clones': '$653.8 million', 'Revenge of the Sith': '$868.4 million', 'The Force Awakens': '$2.071 billion', 'The Last Jedi': '$1.334 billion', 'The Rise of Skywalker': '$1.077 billion",
+    "pred_answer": "Episode I: over $1 billion; Episode III: $849 million; The Rise of Skywalker: over $1 billion; others unknown",
+    "string_accuracy": 0.0,
+    "string_precision": 0.3888888888888889,
+    "answer_accuracy": 0.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "Who won the World Car of the Year Award from 2019 to 2023, and what was the height of each winning car in inches",
+    "gold_answer": "Jaguar I-Pace': 61.6, 'Kia Telluride': 68.9, 'Volkswagen ID.4': 64.4, 'Hyundai Ioniq 5': 63.2, 'Hyundai Ioniq 6': 58.9",
+    "pred_answer": "2019: Jaguar I-Pace (61.5\"), 2020: Kia Telluride (68.9\"), 2021: Volkswagen ID.4 (64.4\"), 2022: Hyundai Ioniq 5 (63.2\"), 2023: Hyundai Ioniq 6 (58.9",
+    "string_accuracy": 0.0,
+    "string_precision": 0.7391304347826086,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What is the population of the five smallest countries, by area, located in the largest continent",
+    "gold_answer": "Macau': 680000, 'Maldives': 521000, 'Singapore': 5917000, 'Bahrain': 1463000, 'Hong Kong': 7498000",
+    "pred_answer": "Maldives: 521,021; Singapore: 5,917,600; Bahrain: 1,577,059; Brunei: 452,524; Palestine: 5,483,450",
+    "string_accuracy": 0.0,
+    "string_precision": 0.3,
+    "answer_accuracy": 0.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "Who are the directors of the top 5 highest-grossing films",
+    "gold_answer": "Avatar': 'James Cameron', 'Avengers: Endgame': 'Anthony Russo and Joe Russo', 'Avatar: The Way of Water': 'James Cameron', 'Titanic': 'James Cameron', 'Star Wars: The Force Awakens': 'J. J. Abrams",
+    "pred_answer": "Victor Fleming, James Cameron, George Lucas, and Anthony and Joe Russo",
+    "string_accuracy": 0.0,
+    "string_precision": 0.5454545454545454,
+    "answer_accuracy": 0.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "Who are the nominees of the 2024 Taiwanese presidential election and what are their birth dates",
+    "gold_answer": "Lai Ching-te': '6 October 1959', 'Hou Yu-ih': '7 June 1957', 'Ko Wen-je': '6 August 1959', 'Terry Gou': '18 October 1950",
+    "pred_answer": "The provided evidence does not contain the names or birth dates of the 2024 Taiwanese presidential nominees",
+    "string_accuracy": 0.0,
+    "string_precision": 0.0,
+    "answer_accuracy": 0.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What are the names of 6 Metropolitan cities in Korea and their respective symbol flowers",
+    "gold_answer": "Busan': 'Camellia', 'Daegu': 'Magnolia', 'Incheon': 'Rose', 'Gwang-ju': 'Royal Azalea', 'Daejeon': 'White Magnolia', 'Ulsan': 'Pear flower",
+    "pred_answer": "Busan: Camellia, Daegu: Magnolia, Daejeon: White magnolia, Gwangju: Royal Azalea, Incheon: Rose, Ulsan: Pear flower",
+    "string_accuracy": 0.0,
+    "string_precision": 0.9333333333333333,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What law schools did the most recent four Supreme Court justices attend",
+    "gold_answer": "Ketanji Brown Jackson': 'Harvard Law School', 'Amy Coney Barrett': 'Notre Dame Law School', 'Brett Kavanaugh': 'Yale Law School', 'Neil Gorsuch': 'Harvard Law School",
+    "pred_answer": "Harvard Law School, Notre Dame Law School, Yale Law School, and Harvard Law School",
+    "string_accuracy": 0.0,
+    "string_precision": 0.9285714285714286,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "Name the U.S. Senators who represent the states in the Pacific region, as defined by the U.S. Census Bureau",
+    "gold_answer": "Patty Murray', 'Maria Cantwell', 'Ron Wyden', 'Jeff Merkley', 'Alex Padilla', 'Laphonza Butler', 'Lisa Murkowski', 'Dan Sullivan', 'Brian Schatz', 'Mazie Hirono",
+    "pred_answer": "Patty Murray, Maria Cantwell, Ron Wyden, Jeff Merkley, Alex Padilla, Laphonza Butler, Lisa Murkowski, Dan Sullivan, Brian Schatz, and Mazie Hirono",
+    "string_accuracy": 0.0,
+    "string_precision": 0.9523809523809523,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "fanoutqa_first20",
+    "question": "What is the highest elevation (in feet) of the 5 largest states (by land mass) in the U.S",
+    "gold_answer": "Alaska': 20310, 'Texas': 8751, 'California': 14505, 'Montana': 12807, 'New Mexico': 13161",
+    "pred_answer": "20,310 ft",
+    "string_accuracy": 0.0,
+    "string_precision": 0.5,
+    "answer_accuracy": 1.0
+  }
+]

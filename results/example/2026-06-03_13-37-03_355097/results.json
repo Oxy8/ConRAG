@@ -1,0 +1,29 @@
+[
+  {
+    "dataset": "example",
+    "question": "Which institute operates the observatory that first detected the Aurora Basin microseism event",
+    "gold_answer": "Northbridge Institute of Seismology",
+    "pred_answer": "Northbridge Institute of Seismology",
+    "string_accuracy": 1.0,
+    "string_precision": 1.0,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "example",
+    "question": "What battery chemistry powers the ferry whose route connects the district where the Solace Archive is located to Old Quay",
+    "gold_answer": "sodium-ion battery banks",
+    "pred_answer": "sodium-ion",
+    "string_accuracy": 1.0,
+    "string_precision": 1.0,
+    "answer_accuracy": 1.0
+  },
+  {
+    "dataset": "example",
+    "question": "Which material is used in the insulation of the habitat designed by the architect who won the 2025 Civic Design Prize",
+    "gold_answer": "silica aerogel",
+    "pred_answer": "silica aerogel",
+    "string_accuracy": 1.0,
+    "string_precision": 1.0,
+    "answer_accuracy": 1.0
+  }
+]
