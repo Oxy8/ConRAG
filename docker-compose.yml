@@ -18,6 +18,16 @@ services:
     <<: *conrag-service
     command: ["run"]
 
+  conrag-debug:
+    <<: *conrag-service
+    command: ["debug-web"]
+    ports:
+      - "8000:8000"
+
+  conrag-fanout-populate:
+    <<: *conrag-service
+    command: ["populate-fanout"]
+
   conrag-build:
     <<: *conrag-service
     command: ["build"]

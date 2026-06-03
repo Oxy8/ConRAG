@@ -16,6 +16,12 @@ case "${action}" in
   query)
     exec python -u main.py --dataset "${dataset}" --mode query "$@"
     ;;
+  debug-web)
+    exec python -u -m conrag.debug_web "$@"
+    ;;
+  populate-fanout)
+    exec python -u populate_fanout.py "$@"
+    ;;
   shell)
     exec bash "$@"
     ;;

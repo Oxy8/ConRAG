@@ -9,6 +9,7 @@ packages = ["src/conrag"]
 name = "ConRAG"
 version = "0.1.0"
 dependencies = [
+  "fanoutqa",
   "networkx",
   "sentence-transformers",
   "torch",

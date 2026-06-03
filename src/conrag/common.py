@@ -75,7 +75,7 @@ def configure_logging(config: Config) -> None:
     root.setLevel(level)
     root.addHandler(_console_handler(level))
     root.addHandler(_file_handler(config.log_path, level))
-    for name in ("httpx", "httpcore", "networkx", "openai", "urllib3"):
+    for name in ("fanoutqa", "google_genai", "httpx", "httpcore", "networkx", "openai", "urllib3"):
         logging.getLogger(name).setLevel(logging.WARNING)
 
 

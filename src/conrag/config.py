@@ -57,18 +57,22 @@ class Config:
     llm_model: str = field(default_factory=lambda: env_str("CONRAG_LLM_MODEL", "gemini-2.5-flash"))
     vertex_api_key: str = field(default_factory=lambda: env_str("CONRAG_VERTEX_API_KEY", ""))
     llm_timeout_seconds: int = field(default_factory=lambda: env_int("CONRAG_LLM_TIMEOUT_SECONDS", 300))
-    llm_retry_count: int = 3
-    llm_retry_backoff_seconds: float = 1.0
-    llm_retry_max_backoff_seconds: float = 60.0
+    llm_retry_count: int = field(default_factory=lambda: env_int("CONRAG_LLM_RETRY_COUNT", 3))
+    llm_retry_backoff_seconds: float = field(default_factory=lambda: env_float("CONRAG_LLM_RETRY_BACKOFF_SECONDS", 1.0))
+    llm_retry_max_backoff_seconds: float = field(default_factory=lambda: env_float("CONRAG_LLM_RETRY_MAX_BACKOFF_SECONDS", 60.0))
     max_output_tokens: int = field(default_factory=lambda: env_int("CONRAG_MAX_OUTPUT_TOKENS", 8192))
     temperature: float = field(default_factory=lambda: env_float("CONRAG_TEMPERATURE", 0.0))
 
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_device: str = field(default_factory=lambda: env_str("CONRAG_EMBEDDING_DEVICE", "cuda"))
     embedding_batch_size: int = 32
+    fanout_sample_count: int = field(default_factory=lambda: env_int("CONRAG_FANOUT_SAMPLE_COUNT", 20))
+    fanout_chunk_target_chars: int = field(default_factory=lambda: env_int("CONRAG_FANOUT_CHUNK_TARGET_CHARS", 2_000))
+    fanout_chunk_soft_max_chars: int = field(default_factory=lambda: env_int("CONRAG_FANOUT_CHUNK_SOFT_MAX_CHARS", 3_000))
+    fanout_min_chunk_chars: int = field(default_factory=lambda: env_int("CONRAG_FANOUT_MIN_CHUNK_CHARS", 500))
 
     sequential_questions: bool = True
-    max_workers: int = 64
+    max_workers: int = field(default_factory=lambda: env_int("CONRAG_MAX_WORKERS", 64))
     evidence_search_top_k: int = 16
     final_top_k: int = 3
     anchor_top_k: int = 4

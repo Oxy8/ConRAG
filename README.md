@@ -112,6 +112,26 @@ Build the image:
 docker compose build
 ```
 
+Populate the FanOut-derived dataset from the first 20 FanOutQA dev questions
+and the union of their required pages:
+
+```bash
+docker compose run --rm conrag-fanout-populate
+```
+
+This writes:
+
+```text
+datasets/fanoutqa_first20/corpus.json
+datasets/fanoutqa_first20/questions.json
+datasets/fanoutqa_first20/metadata.json
+```
+
+The FanOut workflow uses `fanoutqa.wiki_content(evidence)` to fetch only the
+needed article revisions on demand, then splits each page into paragraph-based
+merged chunks before writing `corpus.json`. It does not require the full
+Wikipedia snapshot.
+
 Run the full pipeline:
 
 ```bash
@@ -128,6 +148,25 @@ Query only using an existing knowledge base:
 
 ```bash
 docker compose run --rm conrag-query
+```
+
+Start the trace debugger web app:
+
+```bash
+docker compose up conrag-debug
+```
+
+Then open:
+
+```text
+http://localhost:8000
+```
+
+To build and query the FanOut-derived dataset:
+
+```bash
+CONRAG_DATASET=fanoutqa_first20 docker compose run --rm conrag-build
+CONRAG_DATASET=fanoutqa_first20 docker compose run --rm conrag-query
 ```
 
 The default dataset inside Compose is `example`. To override it:
@@ -159,7 +198,13 @@ Each run writes prediction results, evaluation results, and logs to:
 results/<dataset_name>/<timestamp>/
 ```
 
-The main result file is `results.json`; the aggregate score file is `evaluation_report.json`.
+Query and run modes also write an always-on debug trace to:
+
+```text
+results/<dataset_name>/<timestamp>/trace.json
+```
+
+The main result file is `results.json`; the aggregate score file is `evaluation_report.json`. The debug web app reads `trace.json` so you can inspect decomposition, per-step retrieval, dependency substitutions, intermediate answers, and final synthesis when a question fails.
 
 ## 🗂️ Code Structure
 
