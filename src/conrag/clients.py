@@ -6,22 +6,15 @@ import re
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-import httpx
 import numpy as np
 from numpy.typing import NDArray
-from openai import (
-    APIConnectionError,
-    APITimeoutError,
-    AsyncOpenAI,
-    DefaultAsyncHttpxClient,
-    InternalServerError,
-    RateLimitError,
-)
+from google import genai
+from google.genai import errors, types
 from sentence_transformers import SentenceTransformer
 from tenacity import (
     AsyncRetrying,
     before_sleep_log,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
     wait_exponential,
 )
@@ -37,34 +30,31 @@ _FENCE_RE = re.compile(r"```(?:\s*\w+)?\s*\n(?P<body>[\s\S]*?)\n\s*```", re.MULT
 
 class LLMClient:
     def __init__(self, config: Config) -> None:
-        self._request_args: dict[str, object] = {
-            "model": config.llm_model,
-            "max_output_tokens": config.max_output_tokens,
-            "temperature": config.temperature,
-        }
+        if not config.vertex_api_key.strip():
+            raise ValueError(
+                "Missing Vertex AI express mode API key. "
+                "Set CONRAG_VERTEX_API_KEY in .env or pass --vertex_api_key."
+            )
+        self._model = config.llm_model
+        self._generation_config = types.GenerateContentConfig(
+            max_output_tokens=config.max_output_tokens,
+            temperature=config.temperature,
+        )
         self._retry_count = config.llm_retry_count
         self._retry_wait = config.llm_retry_backoff_seconds
         self._retry_wait_max = max(
             self._retry_wait, config.llm_retry_max_backoff_seconds
         )
-        self._client = AsyncOpenAI(
-            base_url=config.llm_base_url,
-            api_key=config.llm_api_key,
-            http_client=DefaultAsyncHttpxClient(
-                timeout=config.llm_timeout_seconds,
-                transport=httpx.AsyncHTTPTransport(http2=True, trust_env=False),
+        self._client = genai.Client(
+            vertexai=True,
+            api_key=config.vertex_api_key,
+            http_options=types.HttpOptions(
+                api_version="v1",
+                async_client_args={"timeout": config.llm_timeout_seconds},
             ),
-        )
+        ).aio
 
     async def infer(self, *, instructions: str, input_text: str) -> str:
-        retryable = (
-            APITimeoutError,
-            APIConnectionError,
-            RateLimitError,
-            InternalServerError,
-            httpx.TimeoutException,
-            httpx.NetworkError,
-        )
         async for attempt in AsyncRetrying(
             stop=stop_after_attempt(self._retry_count + 1),
             wait=wait_exponential(
@@ -72,21 +62,25 @@ class LLMClient:
                 min=self._retry_wait,
                 max=self._retry_wait_max,
             ),
-            retry=retry_if_exception_type(retryable),
+            retry=retry_if_exception(is_retryable_genai_error),
             before_sleep=before_sleep_log(logger, logging.WARNING),
             reraise=True,
         ):
             with attempt:
-                response = await self._client.responses.create(
-                    **self._request_args,
-                    instructions=instructions.strip(),
-                    input=input_text.strip(),
+                response = await self._client.models.generate_content(
+                    model=self._model,
+                    contents=input_text.strip(),
+                    config=types.GenerateContentConfig(
+                        system_instruction=instructions.strip(),
+                        max_output_tokens=self._generation_config.max_output_tokens,
+                        temperature=self._generation_config.temperature,
+                    ),
                 )
-                return clean_llm_text(response.output_text)
+                return clean_llm_text(extract_response_text(response))
         raise RuntimeError("LLM inference finished without a response")
 
     async def close(self) -> None:
-        await self._client.close()
+        await self._client.aclose()
 
 
 class EmbeddingClient:
@@ -138,3 +132,45 @@ def clean_llm_text(value: object) -> str:
     if text.lower().startswith("json\n"):
         text = text.split("\n", 1)[1].strip()
     return text
+
+
+def is_retryable_genai_error(exc: BaseException) -> bool:
+    if isinstance(exc, errors.APIError):
+        code = getattr(exc, "code", None)
+        if isinstance(code, int):
+            return code == 429 or code >= 500
+        message = str(getattr(exc, "message", exc)).lower()
+        return "timeout" in message or "tempor" in message
+    return isinstance(exc, (TimeoutError, ConnectionError, OSError))
+
+
+def extract_response_text(response: object) -> str:
+    text = getattr(response, "text", None)
+    if isinstance(text, str) and text.strip():
+        return text
+
+    if parts_text := extract_parts_text(getattr(response, "parts", None)):
+        return parts_text
+
+    candidates = getattr(response, "candidates", None)
+    if not isinstance(candidates, Sequence) or isinstance(candidates, str):
+        return ""
+
+    rendered: list[str] = []
+    for candidate in candidates:
+        content = getattr(candidate, "content", None)
+        if parts_text := extract_parts_text(getattr(content, "parts", None)):
+            rendered.append(parts_text)
+    return "\n\n".join(part for part in rendered if part)
+
+
+def extract_parts_text(parts: object) -> str:
+    if not isinstance(parts, Sequence) or isinstance(parts, str):
+        return ""
+
+    rendered = [
+        text
+        for part in parts
+        if isinstance(text := getattr(part, "text", None), str) and text.strip()
+    ]
+    return "\n".join(rendered)

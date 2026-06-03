@@ -1,0 +1,30 @@
+x-conrag-service: &conrag-service
+  build:
+    context: .
+    dockerfile: Dockerfile
+  working_dir: /app
+  env_file:
+    - .env
+  environment:
+    CONRAG_DATASET: ${CONRAG_DATASET:-example}
+  volumes:
+    - ./:/app
+    - huggingface_cache:/root/.cache/huggingface
+  entrypoint:
+    - conrag-compose
+
+services:
+  conrag:
+    <<: *conrag-service
+    command: ["run"]
+
+  conrag-build:
+    <<: *conrag-service
+    command: ["build"]
+
+  conrag-query:
+    <<: *conrag-service
+    command: ["query"]
+
+volumes:
+  huggingface_cache:

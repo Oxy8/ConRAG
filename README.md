@@ -39,18 +39,51 @@ Create a conda environment with Python 3.12.
 ```bash
 conda create -n conrag python=3.12
 conda activate conrag
-python pip install -e .
+python -m pip install -e .
 ```
+
+This repository is configured for `google-genai` with **Vertex AI express mode**.
+It is not configured for Google AI Studio and it does not use the standard
+project/location ADC-style Vertex AI setup.
+
+Create a local `.env` file from the tracked example:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in at least:
+
+```dotenv
+CONRAG_LLM_MODEL=gemini-2.5-flash
+CONRAG_VERTEX_API_KEY=your_vertex_express_mode_api_key
+CONRAG_LLM_TIMEOUT_SECONDS=300
+CONRAG_EMBEDDING_DEVICE=cpu
+```
+
+You can obtain the API key from Vertex AI **express mode**. The runtime reads
+only the ConRAG-specific variables above and does not depend on `GOOGLE_API_KEY`,
+`GEMINI_API_KEY`, `GOOGLE_CLOUD_PROJECT`, or `GOOGLE_CLOUD_LOCATION`.
 
 ## 🚀 Quick Start
 
 Run the included example dataset with 10 passages and 3 questions:
 
 ```bash
-
 python -u main.py \
   --dataset example
 ```
+
+You can also split the work by mode:
+
+```bash
+python -u main.py --dataset example --mode build
+python -u main.py --dataset example --mode query
+```
+
+`build` creates or refreshes the persisted knowledge base under
+`outputs/<dataset>/`. `query` requires an existing knowledge base unless you
+also pass `--rebuild_knowledge_base true`.
 
 ## 📁 Data Preparation
 
@@ -66,7 +99,51 @@ Run the pipeline from `main.py`:
 python -u main.py --dataset <dataset_name>
 ```
 
-Other configuration fields are defined in `src/conrag/config.py`.
+Other runtime fields are defined in `src/conrag/config.py`. LLM credentials and
+the default model should be provided through `.env`.
+
+## 🐳 Docker Compose
+
+You can run the repo without installing Python packages locally.
+
+Build the image:
+
+```bash
+docker compose build
+```
+
+Run the full pipeline:
+
+```bash
+docker compose run --rm conrag
+```
+
+Build only the graph and vector store:
+
+```bash
+docker compose run --rm conrag-build
+```
+
+Query only using an existing knowledge base:
+
+```bash
+docker compose run --rm conrag-query
+```
+
+The default dataset inside Compose is `example`. To override it:
+
+```bash
+CONRAG_DATASET=my_dataset docker compose run --rm conrag-build
+CONRAG_DATASET=my_dataset docker compose run --rm conrag-query
+```
+
+You can also use the main service directly with subcommands:
+
+```bash
+docker compose run --rm conrag build
+docker compose run --rm conrag query
+docker compose run --rm conrag run
+```
 
 ## 📤 Outputs
 

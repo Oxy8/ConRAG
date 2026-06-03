@@ -14,7 +14,7 @@ dependencies = [
   "torch",
   "numpy",
   "faiss-cpu",
-  "openai",
+  "google-genai",
   "httpx[http2]",
   "json-repair",
   "python-dotenv",

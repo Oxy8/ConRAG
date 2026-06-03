@@ -35,31 +35,60 @@ class ConRAG:
         chunks, questions = load_dataset(self.config)
         asyncio.run(self.run_async(chunks, questions))
 
+    def build_knowledge_base(self) -> None:
+        chunks, _ = load_dataset(self.config)
+        asyncio.run(self.build_knowledge_base_async(chunks))
+
+    def query(self) -> None:
+        chunks, questions = load_dataset(self.config)
+        asyncio.run(self.query_async(chunks, questions))
+
     async def run_async(self, chunk_texts: list[str], questions: list[DatasetRecord]) -> None:
         try:
             await self.prepare(chunk_texts)
-            self.retrieval = RetrievalEngine(
-                self.config,
-                self.llm,
-                self.embeddings,
-                self.store,
-                self.require_graph(),
-                self.chunks,
-            )
-            answers = await self.answer_questions(questions)
-            results_path = self.config.run_dir / "results.json"
-            await asyncio.to_thread(write_json, results_path, answers)
-            await Evaluator(self.config, self.llm, results_path).run()
+            await self.answer_dataset(questions)
         finally:
             await self.llm.close()
 
-    async def prepare(self, chunk_texts: list[str]) -> None:
+    async def build_knowledge_base_async(self, chunk_texts: list[str]) -> None:
+        try:
+            await self.prepare(chunk_texts)
+        finally:
+            await self.llm.close()
+
+    async def query_async(self, chunk_texts: list[str], questions: list[DatasetRecord]) -> None:
+        try:
+            await self.prepare(chunk_texts, require_existing_knowledge_base=not self.config.rebuild_knowledge_base)
+            await self.answer_dataset(questions)
+        finally:
+            await self.llm.close()
+
+    async def answer_dataset(self, questions: list[DatasetRecord]) -> None:
+        self.retrieval = RetrievalEngine(
+            self.config,
+            self.llm,
+            self.embeddings,
+            self.store,
+            self.require_graph(),
+            self.chunks,
+        )
+        answers = await self.answer_questions(questions)
+        results_path = self.config.run_dir / "results.json"
+        await asyncio.to_thread(write_json, results_path, answers)
+        await Evaluator(self.config, self.llm, results_path).run()
+
+    async def prepare(self, chunk_texts: list[str], *, require_existing_knowledge_base: bool = False) -> None:
         if not self.config.rebuild_knowledge_base:
             try:
                 self.graph = self.graph_builder.load()
                 self.chunks = self.store.load(self.graph)
                 return
             except Exception as exc:
+                if require_existing_knowledge_base:
+                    raise RuntimeError(
+                        "Persisted knowledge base unavailable. "
+                        "Run build mode first or rerun with --rebuild_knowledge_base true."
+                    ) from exc
                 logger.warning("Persisted knowledge base unavailable: %s", exc)
 
         self.chunks = make_chunk_map(chunk_texts)

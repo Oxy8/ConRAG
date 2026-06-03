@@ -1,40 +1,70 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from importlib import resources
 from pathlib import Path
 from typing import cast
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv() -> bool:
+        return False
 
 load_dotenv()
 
 type Schema = dict[str, list[str]]
 
 
+def env_str(name: str, default: str) -> str:
+    value = os.getenv(name)
+    return value if value is not None else default
+
+
+def env_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise ValueError(f"Environment variable {name} must be an integer, got {value!r}") from exc
+
+
+def env_float(name: str, default: float) -> float:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return float(value)
+    except ValueError as exc:
+        raise ValueError(f"Environment variable {name} must be a float, got {value!r}") from exc
+
+
 @dataclass(kw_only=True, slots=True)
 class Config:
     base_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
     dataset: str = "hotpotqa"
+    mode: str = "run"
     rebuild_knowledge_base: bool = False
 
     log_level: str = "INFO"
     log_file_name: str = "app.log"
 
-    llm_model: str = "gpt-4o-mini"
-    llm_api_key: str = "OPENAI_API_KEY"
-    llm_base_url: str = "https://api.openai.com/v1"
-    llm_timeout_seconds: int = 60
+    llm_model: str = field(default_factory=lambda: env_str("CONRAG_LLM_MODEL", "gemini-2.5-flash"))
+    vertex_api_key: str = field(default_factory=lambda: env_str("CONRAG_VERTEX_API_KEY", ""))
+    llm_timeout_seconds: int = field(default_factory=lambda: env_int("CONRAG_LLM_TIMEOUT_SECONDS", 300))
     llm_retry_count: int = 3
     llm_retry_backoff_seconds: float = 1.0
     llm_retry_max_backoff_seconds: float = 60.0
-    max_output_tokens: int = 8192
-    temperature: float = 0.0
+    max_output_tokens: int = field(default_factory=lambda: env_int("CONRAG_MAX_OUTPUT_TOKENS", 8192))
+    temperature: float = field(default_factory=lambda: env_float("CONRAG_TEMPERATURE", 0.0))
 
-    embedding_model: str = "sentence-transformers/allMiniLM-L6-v2"
-    embedding_device: str = "cuda"
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_device: str = field(default_factory=lambda: env_str("CONRAG_EMBEDDING_DEVICE", "cuda"))
     embedding_batch_size: int = 32
 
     sequential_questions: bool = True
